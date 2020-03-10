@@ -1,6 +1,6 @@
 # dynv6-zone-ddns
 
-[English Version](https://github.com/pdxgf1208/)
+[English Version]()
 
 调用[dynv6](https://dynv6.com/)提供的ssh api动态更新一个域内的ip地址。脚本配置文件有丰富的可选项，以适用不同的环境。该脚本主要用于家庭局域网环境中大量设备的ipv6地址上报，可部署于任意一台Linux主机（包括可用使用shell的路由器，目前只测试了梅林）。
 
@@ -219,120 +219,20 @@ RedHat系：`sudo yum install openssh-server`
     port = 22
     user = "你的merlin路由用户名"
 
-以上设置将设置`zone`的ip地址为部署该脚本设备的地址，`zone`下创建`esxi windows10 windows7 linux merlin`的a、aaaa记录，a记录（ipv4地址）使用部署脚本主机的公网ipv4，aaaa记录（ipv6地址）使用各个设备的地址，可以通过例如`esxi.example.dynv6.net`的方式访问各个主机。
+以上设置将设置`zone`的ip地址为部署该脚本设备的地址，`zone`下创建`esxi windows10 windows7 linux merlin`的a、aaaa记录，a记录（ipv4地址）使用部署脚本主机的公网ipv4，aaaa记录（ipv6地址）使用各个设备的地址，可以通过例如`esxi.example.dynv6.net`的方式通过ipv6访问各个主机；在路由设置好端口映射后可以通过ipv4访问。
 
-### 修改脚本的参数
+### 第一次测试
 
-在脚本文件前有一系列的参数设置，后面有详细说明，至少需要修改：
-- picturepath (截图保存目录)
-- logpath (信息保存目录)
+将`ddns.sh`与`ddns.conf`放置到需要部署该脚本的主机中，（假设放置在用户家目录下），给`ddns.sh`运行权限（命令`chmod u+x ./ddns.sh`），运行脚本（命令`./ddns.sh`），观测其输出是否正常，是否有报错等情况；如果运行成功，到[dynv6](https://dynv6.com/zones)查看是否已经完成更新（连接到dynv6服务器较为缓慢，需耐心等待）；如果失败，检测配置文件是否错误、各主机ssh配置问题等；如果确定为脚本本身的问题，可以提交issues。
 
-这两个选项，以便脚本保存相关信息，默认两个目录均为：
+### 写入crontab
 
-`$HOME/Pictures/VedioCapture`
+在主要Linux发行版与梅林路由上都有crond服务。也可使用其他定时方式实现。
 
-请按照个人的习惯进行修改，并保证脚本使用者对该目录有写入的权限。
+输入命令`crontab -e`打开编辑器，到[Crontab Generator](https://crontab-generator.org/)可以方便生成参数，需要执行的命令是`/home/username/ddns.sh /home/username/ddns.conf`（根据实际情况修改）。
 
-### 将脚本保存位置添加到 PATH 变量中并增加执行权限
+例如，每隔15分钟执行一次，不要输出的crontab内容为：
 
-这有利于从任何文件夹方便调用本脚本。
+`*/15 * * * * /home/username/ddns.sh /home/username/ddns.conf >/dev/null 2>&1`
 
-### 去 sm.ms 图床注册个账号
-
-虽然使用匿名上传也是可行的，但上传后会难以对图片进行管理（需要查看相关日志）。
-注册完毕后在 https://sm.ms/home/apitoken 中生成 token 填入 token 变量中以便将文件保存在你的账户下。
-
-## 用法
-
-假定脚本文件放入`$PATH`目录下并命名为`videotools.sh`
-
-`videotools.sh <video file path> [options...]`
-
-或者
-
-`videotools.sh [options...] <video file path>`
-
-第二种用法在一些系统中会失效（脚本无法获取最后一个参数）。
-
-### 参数列表
-
-|选项|描述|
-| ------------ | ------------ |
-|`-h`|打印帮助信息|
-|`-j`|将输出的 png 图像转换为 jpg 格式（无该选项则仅输出 png ）|
-|`-m <横向数量>x<纵向数量>`|指定将多个截图合并到一张图片的排列格式（不指定则不输出）|
-|`-M <时间>`|指定手动截图的时间参数,格式同 `ffmpeg` 时间格式|
-|`-n <图片数量>`|指定输出单独截图的数目（不指定则不输出）|
-|`-s`|屏蔽视频信息输出（仅截图）|
-|`-u`|将截图上传至 sm.ms 图床（`-j`存在时上传 jpg 格式，否则为 png 格式）|
-|`-w <像素数量>`|指定`-m`参数中单张截图的宽度，不指定则使用视频原始分辨率|
-|`-W <像素数量>`|指定`-M`与`-n`参数中单张截图的宽度，不指定则使用视频原始分辨率|
-
-### 例子
-
-`videotools.sh <video file path>`
-
-输出视频文件的信息并保存。
-
-`videotools.sh <video file path> -M 00:10:10 -sjuW 1280`
-
-屏蔽视频文件的信息输出，在时间`00:10:00`处以`1280`宽的分辨率截图，转换为 jpg 格式并上传 sm.ms 图床。
-
-`videotools.sh <video file path> -m 4x4 -suw 500`
-
-屏蔽视频文件的信息输出，以`4x4`的格式生成缩略图，单张截图宽`500`，并将生成图片上传 sm.ms 图床。
-
-`videotools.sh <video file path> -n 3 -m 3x3 -ujw 500`
-
-输出视频文件的信息并保存，以视频分辨率生成3张独立的截图，以`3x3`的格式生成缩略图，单张截图宽`500`，并将生成图片上传 sm.ms 图床。
-
-### 常数列表
-
-脚本执行前有一些常数的设置，以下为它们的作用。
-
-|选项|描述|
-| ------------ | ------------ |
-|`picturepath`|截图保存位置|
-|`logpath`|视频信息和截图上传信息保存位置|
-|`randomshift_flag`|自动选取时间时是否加入随机偏移，为`0`或不存在使用固定值，影响`-n`与`-m`参数生成的截图|
-|`logofile`|缩略图中的logo文件位置，留空为不使用logo|
-|`gap`|缩略图中的间隙参数，单位像素|
-|`comment`|缩略图中的Comment字段|
-|`font`|缩略图中顶端说明文字字体|
-|`fontsize`|缩略图中顶端说明文字字号|
-|`fontcolor`|缩略图中顶端说明文字颜色|
-|`font_shadowcolor`|缩略图中顶端说明文字阴影颜色|
-|`font_shadowx`|缩略图中顶端说明文字阴影x偏移|
-|`font_shadowy`|缩略图中顶端说明文字阴影y偏移|
-|`require_timestamp`|缩略图中时间戳开关，非`1`或者不存在为不生成|
-|`timestamp_fontcolor`|缩略图中时间戳文字颜色|
-|`timestamp_shadowcolor`|缩略图中时间戳文字阴影颜色|
-|`timestamp_font`|缩略图中时间戳文字字体|
-|`timestamp_fontsize`|缩略图中时间戳文字字号|
-|`timestamp_shadowx`|缩略图中时间戳文字阴影x偏移|
-|`timestamp_shadowy`|缩略图中时间戳文字阴影y偏移|
-|`timestamp_x`|缩略图中时间戳文字位于该截图x位置的比例，如`0.5`在截图中央|
-|`timestamp_y`|缩略图中时间戳文字位于该截图y位置的比例，如`0.5`在截图中央|
-|`backgroundcolor`|缩略图背景颜色|
-|`token`|`sm.ms`图床`apikey`,留空使用匿名上传|
-
-其中有关颜色的定义请参考[FFmpeg颜色定义](https://www.ffmpeg.org/ffmpeg-all.html#Color "FFmpeg颜色定义")，有关字体相关参数具体说明请参考[FFmpeg drawtext参数列表](https://www.ffmpeg.org/ffmpeg-all.html#drawtext-1 "FFmpeg drawtext参数列表")。
-
-## 使用注意事项
-
-1. 使用`-m`参数需注意，生成缩略图分辨率过大容易导致内存不足而失败；
-1. 使用过旧版本`FFmpeg`可能导致脚本部分功能失效；
-1. 使用上传功能时建议搭配`-j`参数使用，以免因生成`png`格式图片过大，超过`sm.ms`图床上传限制而失败；
-1. 使用上传功能时请遵守`sm.ms`[使用协议](https://sm.ms/about "使用协议")。
-
-## 致谢
-
-1. 感谢[FFmpeg](https://www.ffmpeg.org/ "FFmpeg")提供的强大视频处理工具和详尽的[Wiki](https://trac.ffmpeg.org/wiki "Wiki")文档；
-1. 感谢[MediaInfo](https://mediaarea.net/en/MediaInfo "MediaInfo")提供的视频信息提取工具;
-1. 感谢[sm.ms图床](https://sm.ms/ "sm.ms图床")提供的免费、可靠服务和易用的[API](https://doc.sm.ms/ "API")；
-1. 感谢[中国科学技术大学开源软件镜像站](https://mirrors.ustc.edu.cn/ "中国科学技术大学开源软件镜像站")提供的软件镜像服务和帮助文档。
-
-## 许可
-
-这个项目是在MIT许可下进行的 - 查看 [LICENSE](https://github.com/pdxgf1208/ffmpeg-videotools/blob/master/LICENSE "LICENSE") 文件获取更多详情。
-
+保存后，该脚本应该就能自动执行了。

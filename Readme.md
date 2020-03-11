@@ -236,3 +236,116 @@ RedHat系：`sudo yum install openssh-server`
 `*/15 * * * * /home/username/ddns.sh /home/username/ddns.conf >/dev/null 2>&1`
 
 保存后，该脚本应该就能自动执行了。
+
+## 配置文件说明
+
+以下内容为配置文件格式各字段的作用，可以实现高度的自定义。
+
+### 配置文件格式
+
+配置文件仿照Linux中常见配置文件的格式，其基本格式为
+
+```bash
+    element = value
+```
+
+本脚本忽略空格与制表符，例如
+
+```bash
+host=test
+    host = test
+```
+
+两行没有区别。
+
+当一行以`#`开头时，表示该行内容为注释，例如
+
+```bash
+# 这是一行注释
+    #这也是一行注释
+```
+
+配置文件以`[value]`为分割标志，其中`[common]`为必须且特有的标志，需出现在第一个，其余可自定义；此外，配置文件中空行无效。
+
+### `[common]`字段
+
+该字段内容主要负责设置与dynv6 api通信的细节以及对`zone`本身的ipv4/ipv6的设定
+
+变量|定义域|说明
+------------- | -------------|-------------
+dynv6_server|`dynv6.com`、`ipv4.dynv6.com`、`ipv6.dynv6.com`|指定脚本使用`dynv6`的哪个域名，其中`dynv6.com`为自动选择`ipv4/ipv6`；`ipv4.dynv6.com`为强制走`ipv4`；`ipv6.dynv6.com`为强制走`ipv6`
+dynv6_key|主机内文件位置|定义与`dynv6`建立ssh连接时使用的私钥，空或不存在为使用ssh默认秘钥
+history_file|主机内文件位置|定义记录脚本历史ip记录的文件位置，空或不存在则记录在`$HOME/.iphistory.log`
+zone|域名|指定需要更新的`zone`名称
+type|`local`、`linux`、`windows`、`esxi`、`null`|指定使用哪种设备的ip更新`zone`的ip记录，其中`null`为不使用`zone`ip记录
+use_ipv4|`true`、`false`|开启`zone`ipv4记录的开关
+use_ipv6|`true`、`false`|开启`zone`ipv6记录的开关
+command_type|`wget`、`curl`|指定获取ipv4地址使用的工具，不启用ipv4地址时可以为空
+devices|设备名|指定获取哪个设备的ipv6地址，`linux`使用`ip`查看（例如设备`eth0`），`windows`到网络适配器中查看，建议使用中文（可重命名，例如设备`Enternet`），`esxi`在`网络-VMkernel`中查看（例如`vmk0`），为空则默认选取第一个可用的地址
+ip|ip地址或域名|指定登录远程主机的ip或域名，支持v4/v6；在使用ipv6本地链路地址时需要加上使用的本机设备名，如`FE80::C800:EFF:FE74:8%eth0`
+port|端口号|指定登录远程主机的端口号，空则默认使用22端口
+login_type|`key`、`password`|指定登录远程主机使用的类型，无需登录时可以为空
+key|主机内文件位置|定义登录远程主机时使用的私钥，空或不存在为使用ssh默认秘钥
+user|用户名|定义登录远程主机时使用的用户名，空为使用当前用户名
+password|密码|定义登录远程主机使用的密码，当使用`key`认证时无需此项
+
+### 主机字段
+
+该字段定义`zone`下各台主机的相关设置，可以重复
+
+变量|定义域|说明
+------------- | -------------|-------------
+name|主机名|指定需要更新的`zone`下字段的名称，即主机名
+use_ipv4|`true`、`false`|开启ipv4记录的开关
+use_zone_ipv4|`true`、`false`|开启ipv4记录时是否直接使用`zone`的ipv4记录
+use_ipv6|`true`、`false`|开启ipv6记录的开关
+use_zone_ipv6|`true`、`false`|开启ipv6记录时是否直接使用`zone`的ipv6记录
+type|`local`、`linux`、`windows`、`esxi`、`null`|指定使用哪种设备的ip更新`zone`的ip记录，其中`null`为不使用该主机名ip记录
+command_type|`wget`、`curl`|指定获取ipv4地址使用的工具，不启用ipv4地址时可以为空
+devices|设备名|指定获取哪个设备的ipv6地址，`linux`使用`ip`查看（例如设备`eth0`），`windows`到网络适配器中查看，建议使用中文（可重命名，例如设备`Enternet`），`esxi`在`网络-VMkernel`中查看（例如`vmk0`），为空则默认选取第一个可用的地址
+ip|ip地址或域名|指定登录远程主机的ip或域名，支持v4/v6；在使用ipv6本地链路地址时需要加上使用的本机设备名，如`FE80::C800:EFF:FE74:8%eth0`
+port|端口号|指定登录远程主机的端口号，空则默认使用22端口
+login_type|`key`、`password`|指定登录远程主机使用的类型，无需登录时可以为空
+key|主机内文件位置|定义登录远程主机时使用的私钥，空或不存在为使用ssh默认秘钥
+user|用户名|定义登录远程主机时使用的用户名，空为使用当前用户名
+password|密码|定义登录远程主机使用的密码，当使用`key`认证时无需此项
+
+## 使用中的一些提示
+
++ 对于大多数应用，很多设备公用一个ipv4公网地址，此时`zone`下各`host`只需使用`zone`的ipv4地址即可（`use_zone_ipv4=true`），无需重复获取。
+
++ 脚本在获取Windows设备ip时默认获取的shell为cmd，当用户修改获取的shell为powershell时，需要自行更改脚本适配（将发送到Windows执行命令中的`&`更改为`;`）。
+
++ 建议对于各`host`，使用静态ipv4以便于脚本与之联系。当无法使用静态ipv4时（例如电信的光猫在路由状态无法设置静态DHCP分配），可以考虑使用ipv6本地链路地址（与网卡MAC唯一对应）进行通信。
+
++ 本脚本的主要应用场景是多台主机需要动态域名解析的环境（主要针对各台主机的ipv6），如果只有单台主机的动态域名解析需求，建议使用dynv6给出的[脚本](https://gist.github.com/corny/7a07f5ac901844bd20c9)，配置更加简洁。
+
++ 由于脚本的工作原理是登录各台主机获取信息，所以当部署本脚本的主机被攻破后，可能会导致黑客获取到登录其他主机的私钥，导致更大的损失。建议加强部署本脚本主机的安全设置，并在配置登录其他主机中使用独立账号，以降低安全风险。本人对使用此脚本造成的损失概不负责。
+
++ 由于dynv6服务器位于国外，直连的速度很慢，甚至失败，有梯子的用户可以考虑在本地部署一个socks5代理服务，连接到dynv6服务器时使用代理。作者使用[v2ray](https://www.v2ray.com)（需要翻墙）在本地开放socks端口，使用购买的机场连接到dynv6服务器，快很多。有需求的用户可以参考[此文](https://kanda.me/2019/07/01/ssh-over-http-or-socks/)，并更改脚本的函数`zone_ipv4_update`、`zone_ipv6_update`、`host_ipv4_update`、`host_ipv6_update`。
+
+## 脚本尚存的不足
+
++ dynv6提供的ssh api似乎无法一次输入多个命令，因此在需要更新大量信息时，要建立很多次ssh连接。如果有方法可以一次执行多条命令，请提交issue或者fork。
+
++ 由于作者没有群晖、威联通等专业NAS设备，没有对此进行测试，估计这类设备可以归类到Linux中。如有测试成功的，欢迎反馈。
+
++ 由于作者没有macOS设备，本脚本没有获取macOS主机ip的功能，欢迎各位帮忙适配macOS。
+
+## 下一步计划
+
++ 打算适配其他dns服务商提供的api。
+
+## 致谢
+
+1. 感谢[dynv6](https://dynv6.com/)提供的免费域名、解析服务和易用的[api](https://dynv6.com/docs/apis)；
+
+1. 感谢[corny](https://gist.github.com/corny)提供的[脚本](https://gist.github.com/corny/7a07f5ac901844bd20c9)，本项目中获取ipv6的方式参考了corny的方法；
+
+1. 感谢[ip api](https://ip-api.com)提供的免费查询ipv4地址的api；
+
+1. 感谢[koolshare](https://koolshare.cn/)论坛各位大佬制作的梅林固件。
+
+## 许可
+
+这个项目是在MIT许可下进行的 - 查看 [LICENSE](https://github.com/pdxgf1208/dynv6-zone-ddns/blob/master/LICENSE) 文件获取更多详情。

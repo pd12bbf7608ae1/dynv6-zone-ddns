@@ -246,7 +246,7 @@ RedHat系：`sudo yum install openssh-server`
 配置文件仿照Linux中常见配置文件的格式，其基本格式为
 
 ```bash
-    element = value
+element = value
 ```
 
 本脚本忽略空格与制表符，例如

@@ -16,6 +16,20 @@ If you choose password for ssh login (not recommended), you need to use the sshp
 
 Other dependent commands are ip, curl, or wget, where curl or wget is used to obtain the public network ipv4 address; `ip` is used to obtain ipv6, which is basically built-in. When curl and wget are installed on the Windows platform, the installation directory needs to be added to the environment variable `Path`.
 
+## Usage
+
+`ddns.sh -h` Print help message
+
+`ddns.sh [config file]` Run with the given config file
+
+`ddns.sh` Run with config file from default locations, which are
+
++ `$PWD/ddns.conf`
+
++ `$HOME/ddns.conf`
+
++ `/etc/ddns.conf`
+
 ## The rough flow of using the script
 
 1. Sign up for a [dynv6](https://dynv6.com/) account and create or import your own domain name (dynv6 provides free second-level domain names);

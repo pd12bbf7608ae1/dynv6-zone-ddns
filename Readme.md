@@ -18,6 +18,20 @@
 
 其他依赖命令为ip、curl或wget，其中curl或wget为获取公网ipv4时使用，不需要可不安装；ip为获取ipv6时使用，基本内置。curl与wget安装于Windows平台时需要将安装目录添加至环境变量`Path`中。
 
+## 格式
+
+`ddns.sh -h` 打印帮助信息
+
+`ddns.sh [config file]` 使用给定的配置文件执行脚本
+
+`ddns.sh` 从尝试默认位置读取配置信息运行脚本，默认位置依次为
+
++ 当前目录下`ddns.conf`
+
++ 家目录`ddns.conf`
+
++ `/etc/ddns.conf`
+
 ## 使用脚本的大致流程
 
 1. 注册一个[dynv6](https://dynv6.com/)账号，并创建或导入自己的域名（dynv6提供免费二级域名）;

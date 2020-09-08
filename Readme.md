@@ -1,6 +1,6 @@
 # dynv6-zone-ddns
 
-[English Version](https://github.com/pdxgf1208/dynv6-zone-ddns/blob/master/Readme_eng.md)
+[English Version](Readme_eng.md)
 
 调用[dynv6](https://dynv6.com/)提供的ssh api动态更新一个域内的ip地址。脚本配置文件有丰富的可选项，以适用不同的环境。该脚本主要用于家庭局域网环境中大量设备的ipv6地址上报，可部署于任意一台Linux主机（包括可用使用shell的路由器，目前只测试了梅林）。
 
@@ -362,4 +362,4 @@ password|密码|定义登录远程主机使用的密码，当使用`key`认证�
 
 ## 许可
 
-这个项目是在MIT许可下进行的 - 查看 [LICENSE](https://github.com/pdxgf1208/dynv6-zone-ddns/blob/master/LICENSE) 文件获取更多详情。
+这个项目是在MIT许可下进行的 - 查看 [LICENSE](LICENSE) 文件获取更多详情。

@@ -10,7 +10,7 @@ get_local_ipv4(){
         ;;
         *)
             echo "Error command_type" 1>&2
-            echo "Please go to https://github.com/pdxgf1208/dynv6-zone-ddns for help." 1>&2
+             1>&2
             rm $history_file
             exit 1
         ;;
@@ -45,7 +45,7 @@ get_linux_ipv4(){
         ;;
         *)
             echo "Error login_type" 1>&2
-            echo "Please go to https://github.com/pdxgf1208/dynv6-zone-ddns for help." 1>&2
+             1>&2
             rm $history_file
             exit 1
         ;;
@@ -59,7 +59,7 @@ get_linux_ipv4(){
         ;;
         *)
             echo "Error command_type" 1>&2
-            echo "Please go to https://github.com/pdxgf1208/dynv6-zone-ddns for help." 1>&2
+             1>&2
             rm $history_file
             exit 1
         ;;
@@ -119,7 +119,7 @@ get_windows_ipv4(){
         ;;
         *)
             echo "Error login_type" 1>&2
-            echo "Please go to https://github.com/pdxgf1208/dynv6-zone-ddns for help." 1>&2
+             1>&2
             rm $history_file
             exit 1
         ;;
@@ -162,7 +162,7 @@ get_windows_ipv6(){
         ;;
         *)
             echo "Error login_type" 1>&2
-            echo "Please go to https://github.com/pdxgf1208/dynv6-zone-ddns for help." 1>&2
+             1>&2
             rm $history_file
             exit 1
         ;;
@@ -207,7 +207,7 @@ get_esxi_ipv4(){
         ;;
         *)
             echo "Error login_type" 1>&2
-            echo "Please go to https://github.com/pdxgf1208/dynv6-zone-ddns for help." 1>&2
+             1>&2
             rm $history_file
             exit 1
         ;;
@@ -238,7 +238,7 @@ get_esxi_ipv6(){
         ;;
         *)
             echo "Error login_type" 1>&2
-            echo "Please go to https://github.com/pdxgf1208/dynv6-zone-ddns for help."
+            
             rm $history_file
             exit 1
         ;;
@@ -294,7 +294,7 @@ host_ipv6_update(){
 
 if [ "$1" = "-h" ]; then
     echo "A shell script using dynv6 ssh api to update ip of a zone."
-    echo "Please go to https://github.com/pdxgf1208/dynv6-zone-ddns for help."
+    
     exit 0
 fi
 
@@ -314,7 +314,7 @@ else
                 # echo etc
                 else
                 echo "No config file found."
-                echo "Please go to https://github.com/pdxgf1208/dynv6-zone-ddns for help."
+                
                 exit 1
             fi
         fi
@@ -327,7 +327,7 @@ config=$(cat $configfile | sed -e "s/^[[:blank:]]*//g" -e "s/^#.*//g" -e "/^$/d"
 common_start=$(echo "$config" | grep "^\[common\]" -n | cut -d ":" -f 1)
 if [ -z "$common_start" ]; then
     echo "No common setting."
-    echo "Please go to https://github.com/pdxgf1208/dynv6-zone-ddns for help."
+    
     exit 1
 fi
 
@@ -347,7 +347,7 @@ if [ ! -e "$history_file" ]; then
     touch "$history_file"
     if [ "$?" -ne "0" ]; then
         echo "Cannot create history file"
-        echo "Please go to https://github.com/pdxgf1208/dynv6-zone-ddns for help."
+        
         exit 1
     fi
     echo "$(echo 'Config file status:')$(ls -l $configfile)" > "$history_file"
@@ -430,7 +430,7 @@ case "$common_use_ipv4" in
         ;;
         *)
             echo "Unknow zone type!"
-            echo "Please go to https://github.com/pdxgf1208/dynv6-zone-ddns for help."
+            
             rm "$history_file"
             exit 1
         ;;
@@ -441,7 +441,7 @@ case "$common_use_ipv4" in
     ;;
     *)
         echo "common_use_ipv4 error"
-        echo "Please go to https://github.com/pdxgf1208/dynv6-zone-ddns for help."
+        
         rm "$history_file"
         exit 1
     ;;
@@ -500,7 +500,7 @@ case "$common_use_ipv6" in
     ;;
     *)
         echo "common_use_ipv6 error type"
-        echo "Please go to https://github.com/pdxgf1208/dynv6-zone-ddns for help."
+        
         rm "$history_file"
         exit 1
     ;;
@@ -655,7 +655,7 @@ do
             ;;
             *)
                 echo "host#$i use_zone_ipv4 error type"
-                echo "Please go to https://github.com/pdxgf1208/dynv6-zone-ddns for help."
+                
                 rm "$history_file"
                 exit 1
             ;;
@@ -669,7 +669,7 @@ do
 
         *)
             echo "host$i use_ipv4 error type"
-            echo "Please go to https://github.com/pdxgf1208/dynv6-zone-ddns for help."
+            
             rm "$history_file"
             exit 1
         ;;
@@ -743,7 +743,7 @@ do
 
         *)
             echo "host$i use_ipv6 error type"
-            echo "Please go to https://github.com/pdxgf1208/dynv6-zone-ddns for help."
+            
             rm "$history_file"
             exit 1
         ;;
